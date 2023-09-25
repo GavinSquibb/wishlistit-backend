@@ -1,22 +1,14 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets, permissions
-from wishlistit.serializers import UserSerializer, GroupSerializer
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
-class HomeView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        content = {
-            "message": "Welcome to the JWT Authentication page using React Js and Django!"
-        }
-
-        return Response(content)
+from .models import *
+from wishlistit.serializers import *
 
 
 class LogoutView(APIView):
@@ -39,7 +31,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -50,3 +41,41 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class WishListListView(generics.ListAPIView):
+    queryset = WishList.objects.all()
+    serializer_class = WishListSerializer
+
+
+class WishListCreateView(generics.ListCreateAPIView):
+    queryset = WishList.objects.all()
+    serializer_class = WishListSerializer
+
+
+class WishListDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = WishList.objects.all()
+    serializer_class = WishListSerializer
+
+
+class GiftItemListCreateView(generics.ListCreateAPIView):
+    queryset = GiftItem.objects.all()
+    serializer_class = GiftItemSerializer
+
+
+class GiftItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GiftItem.objects.all()
+    serializer_class = GiftItemSerializer
+
+
+class GiftItemsByWishListView(generics.ListAPIView):
+    serializer_class = GiftItemSerializer
+
+    def get_queryset(self):
+        # Get the `WishList` ID from the URL parameters
+        wishlist_id = self.kwargs["wishlist_id"]
+
+        # Filter `GiftItem` objects based on the `WishList` ID
+        queryset = GiftItem.objects.filter(wish_list=wishlist_id)
+
+        return queryset

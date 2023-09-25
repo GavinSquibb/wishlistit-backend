@@ -28,10 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "wishlistit",
     "corsheaders",
+    "channels",
+    "drf_yasg",
+    "django_extensions",
 ]
 
 ALLOWED_HOSTS = ["*"]
@@ -143,3 +146,6 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+ASGI_APPLICATION = "backend.asgi.application"
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
